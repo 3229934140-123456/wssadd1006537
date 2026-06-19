@@ -4,7 +4,6 @@ import classnames from 'classnames';
 import dayjs from 'dayjs';
 import useAppStore from '@/store/useAppStore';
 import { getTasksForDay } from '@/data/tasks';
-import type { TaskStatus } from '@/types';
 import styles from './index.module.scss';
 
 interface CalendarViewProps {
@@ -15,7 +14,7 @@ interface CalendarViewProps {
 const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
 
 const CalendarView: React.FC<CalendarViewProps> = ({ onDayClick, selectedDate }) => {
-  const { startDate, taskRecords } = useAppStore();
+  const { startDate, taskRecords, dayNotes } = useAppStore();
 
   const days = useMemo(() => {
     const result: Array<{
@@ -28,6 +27,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onDayClick, selectedDate })
       completedCount: number;
       totalCount: number;
       hasIssue: boolean;
+      hasNote: boolean;
     }> = [];
 
     const start = dayjs(startDate);
@@ -50,6 +50,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onDayClick, selectedDate })
       const hasIssue = records.some(
         (r) => r.status === 'uncomfortable' || r.status === 'skipped'
       );
+      const hasNote = !!dayNotes[dateStr];
 
       result.push({
         date: dateStr,
@@ -61,11 +62,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onDayClick, selectedDate })
         completedCount,
         totalCount: dayTasks.length,
         hasIssue,
+        hasNote,
       });
     }
 
     return result;
-  }, [startDate, taskRecords, selectedDate]);
+  }, [startDate, taskRecords, dayNotes, selectedDate]);
 
   const weekRows = useMemo(() => {
     const rows: typeof days[] = [];
@@ -83,6 +85,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onDayClick, selectedDate })
         completedCount: 0,
         totalCount: 0,
         hasIssue: false,
+        hasNote: false,
       });
     }
     const all = [...prefix, ...days];
@@ -146,6 +149,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onDayClick, selectedDate })
                       />
                     </View>
                   )}
+                  {cell.hasNote && (
+                    <View className={styles.noteDot} />
+                  )}
                 </View>
               );
             })}
@@ -169,6 +175,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onDayClick, selectedDate })
         <View className={styles.legendItem}>
           <View className={classnames(styles.legendDot, styles.legendFuture)} />
           <Text className={styles.legendText}>未开始</Text>
+        </View>
+        <View className={styles.legendItem}>
+          <View className={styles.legendNoteDot} />
+          <Text className={styles.legendText}>有备注</Text>
         </View>
       </View>
     </View>

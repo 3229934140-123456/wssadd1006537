@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, Text, Image } from '@tarojs/components';
+import React, { useMemo, useState } from 'react';
+import { View, Text, Image, Input } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import useAppStore from '@/store/useAppStore';
 import { tasks } from '@/data/tasks';
@@ -19,16 +19,26 @@ const TaskDetailPage: React.FC = () => {
   const router = useRouter();
   const taskId = router.params.taskId || '';
   const date = router.params.date || dayjs().format('YYYY-MM-DD');
-  const { getTaskStatus, updateTaskStatus } = useAppStore();
+  const { getTaskStatus, updateTaskStatus, getDayNote, updateDayNote, taskRecords, dayNotes } = useAppStore();
+
+  const [noteInput, setNoteInput] = useState(() => getDayNote(date));
 
   const task = useMemo(() => tasks.find((t) => t.id === taskId), [taskId]);
   const currentStatus = useMemo(
     () => getTaskStatus(taskId, date),
-    [taskId, date, getTaskStatus]
+    [taskId, date, getTaskStatus, taskRecords]
   );
 
   const isFuture = dayjs(date).isAfter(dayjs(), 'day');
   const isToday = date === dayjs().format('YYYY-MM-DD');
+
+  const handleNoteBlur = () => {
+    updateDayNote(date, noteInput);
+  };
+
+  const handleNoteChange = (e: any) => {
+    setNoteInput(e.detail.value);
+  };
 
   if (!task) {
     return (
@@ -50,10 +60,6 @@ const TaskDetailPage: React.FC = () => {
       title: status === 'completed' ? '已标记完成 ✓' : statusLabels[status],
       icon: 'none',
     });
-  };
-
-  const handleBack = () => {
-    Taro.navigateBack();
   };
 
   return (
@@ -101,6 +107,24 @@ const TaskDetailPage: React.FC = () => {
           <Text className={styles.guideTitle}>📖 详细说明</Text>
           <Text className={styles.guideText}>{task.guide}</Text>
         </View>
+
+        {!isFuture && (
+          <View className={styles.noteCard}>
+            <Text className={styles.noteTitle}>📝 今日备注</Text>
+            <Text className={styles.noteHint}>
+              记录不舒服原因、不会做卡在哪、或其他想备注的内容
+            </Text>
+            <Input
+              className={styles.noteInput}
+              value={noteInput}
+              placeholder="例如：刷牙时右边牙龈有点痛..."
+              placeholderClass={styles.notePlaceholder}
+              onInput={handleNoteChange}
+              onBlur={handleNoteBlur}
+              confirmType="done"
+            />
+          </View>
+        )}
       </View>
 
       {!isFuture && (

@@ -8,9 +8,19 @@ import dayjs from 'dayjs';
 import styles from './index.module.scss';
 
 const ReviewPage: React.FC = () => {
-  const { getReviewStats, startDate, currentDay } = useAppStore();
+  const {
+    getReviewStats,
+    startDate,
+    currentDay,
+    taskRecords,
+    checkupRecords,
+    sendReviewReport,
+  } = useAppStore();
 
-  const stats = useMemo(() => getReviewStats(), [getReviewStats]);
+  const stats = useMemo(
+    () => getReviewStats(),
+    [getReviewStats, taskRecords, checkupRecords]
+  );
 
   const mostCommonSymptomName = useMemo(() => {
     if (!stats.mostCommonSymptom) return null;
@@ -28,6 +38,24 @@ const ReviewPage: React.FC = () => {
 
   const formatDate = (dateStr: string) => {
     return dayjs(dateStr).format('MM月DD日');
+  };
+
+  const handleSendToDoctor = () => {
+    sendReviewReport('conv-1', {
+      completionRate: stats.completionRate,
+      totalCompleted: stats.totalCompleted,
+      totalTasks: stats.totalTasks,
+      consecutiveDays: stats.consecutiveDays,
+      mostCommonSymptomName,
+      symptomTrend: stats.symptomTrend,
+      nextAdvice: stats.nextAdvice,
+    });
+
+    Taro.showToast({ title: '报告已发送给医生', icon: 'success' });
+
+    setTimeout(() => {
+      Taro.navigateTo({ url: '/pages/chat/index?convId=conv-1' });
+    }, 800);
   };
 
   return (
@@ -106,6 +134,11 @@ const ReviewPage: React.FC = () => {
           <View className={styles.adviceCard}>
             <Text className={styles.adviceText}>{stats.nextAdvice}</Text>
           </View>
+        </View>
+
+        <View className={styles.sendBtn} onClick={handleSendToDoctor}>
+          <Text className={styles.sendBtnIcon}>📨</Text>
+          <Text className={styles.sendBtnText}>发送护理报告给医生</Text>
         </View>
 
         <View className={styles.encourageCard}>

@@ -113,6 +113,16 @@
   background: $color-warning;
 }
 
+.noteDot {
+  width: 10rpx;
+  height: 10rpx;
+  background: $color-primary-light;
+  border-radius: $radius-round;
+  position: absolute;
+  top: 6rpx;
+  right: 6rpx;
+}
+
 .legend {
   display: flex;
   justify-content: space-around;
@@ -148,6 +158,15 @@
 
 .legendFuture {
   background: $color-divider;
+}
+
+.legendNoteDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+  margin-right: 8rpx;
+  background: $color-primary-light;
+  border: 2rpx solid $color-primary;
 }
 
 .legendText {

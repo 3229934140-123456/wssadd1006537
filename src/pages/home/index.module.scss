@@ -157,6 +157,28 @@
   color: $color-text-tertiary;
 }
 
+.notePreview {
+  display: flex;
+  align-items: flex-start;
+  background: $color-bg-hover;
+  border-radius: $radius-sm;
+  padding: $spacing-md;
+  margin-top: $spacing-md;
+  gap: $spacing-sm;
+}
+
+.notePreviewIcon {
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+.notePreviewText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.5;
+  flex: 1;
+}
+
 .tipCard {
   background: $color-bg-card;
   border-radius: $radius-md;

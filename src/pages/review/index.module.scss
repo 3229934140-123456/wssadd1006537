@@ -161,6 +161,33 @@
   line-height: 1.7;
 }
 
+.sendBtn {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg $spacing-xl;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 4rpx 16rpx rgba($color-primary, 0.3);
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.sendBtnIcon {
+  font-size: 36rpx;
+}
+
+.sendBtnText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
 .encourageCard {
   background: linear-gradient(135deg, #F0F9FF 0%, #E8F4FF 100%);
   border-radius: $radius-md;

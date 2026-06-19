@@ -1,0 +1,139 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, #F0F9FF 0%, #E8F4FF 100%);
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.cardIcon {
+  font-size: 40rpx;
+}
+
+.headerInfo {
+  flex: 1;
+}
+
+.cardTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: block;
+}
+
+.cardDate {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+}
+
+.statsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: $spacing-lg;
+}
+
+.statItem {
+  @include flex-center;
+  flex-direction: column;
+}
+
+.statValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin-bottom: 4rpx;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.statDivider {
+  width: 1rpx;
+  height: 60rpx;
+  background: $color-divider;
+}
+
+.symptomRow {
+  padding: $spacing-sm $spacing-lg;
+  background: #FFF7E8;
+  margin: 0 $spacing-lg;
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+}
+
+.symptomLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-right: $spacing-xs;
+}
+
+.symptomValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-warning;
+}
+
+.adviceRow {
+  padding: $spacing-md $spacing-lg;
+  border-top: 1rpx solid $color-divider;
+}
+
+.adviceLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+  display: block;
+}
+
+.adviceText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.compactCard {
+  background: $color-bg-hover;
+  border-radius: $radius-sm;
+  padding: $spacing-md;
+}
+
+.compactHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+}
+
+.compactLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.compactRate {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+}
+
+.compactSummary {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}

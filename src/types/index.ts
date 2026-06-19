@@ -58,4 +58,13 @@ export interface ChatMessage {
     symptomNames: string[];
     trend: { date: string; symptomCount: number }[];
   };
+  reviewReport?: {
+    completionRate: number;
+    totalCompleted: number;
+    totalTasks: number;
+    consecutiveDays: number;
+    mostCommonSymptomName: string;
+    symptomTrend: { date: string; symptomCount: number }[];
+    nextAdvice: string;
+  };
 }

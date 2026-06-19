@@ -35,7 +35,9 @@ const HomePage: React.FC = () => {
     setActiveView,
     getTaskStatus,
     getDayRecords,
+    getDayNote,
     taskRecords,
+    dayNotes,
   } = useAppStore();
 
   const [selectedDate, setSelectedDate] = useState<string>(
@@ -101,6 +103,10 @@ const HomePage: React.FC = () => {
   const tip = getTipForDay(selectedDayNumber);
   const dayLabel = getDayLabel(selectedDayNumber);
   const today = dayjs().format('YYYY-MM-DD');
+  const selectedDayNote = useMemo(
+    () => getDayNote(selectedDate),
+    [selectedDate, getDayNote, dayNotes]
+  );
   const todayRecords = useMemo(
     () => getDayRecords(today),
     [today, getDayRecords, taskRecords]
@@ -244,6 +250,13 @@ const HomePage: React.FC = () => {
                     ? '这一天还没到哦'
                     : '这一天没有护理任务'}
                 </Text>
+              </View>
+            )}
+
+            {selectedDayNote && (
+              <View className={styles.notePreview}>
+                <Text className={styles.notePreviewIcon}>📝</Text>
+                <Text className={styles.notePreviewText}>{selectedDayNote}</Text>
               </View>
             )}
           </View>

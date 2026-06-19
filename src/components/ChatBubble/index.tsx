@@ -3,6 +3,7 @@ import { View, Text, Image } from '@tarojs/components';
 import classnames from 'classnames';
 import type { ChatMessage } from '@/types';
 import CheckupCard from '@/components/CheckupCard';
+import ReviewReport from '@/components/ReviewReport';
 import styles from './index.module.scss';
 
 interface ChatBubbleProps {
@@ -24,7 +25,18 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, dentistAvatar }) => {
         />
       )}
       <View className={classnames(styles.bubble, isDentist ? styles.bubbleLeft : styles.bubbleRight)}>
-        {message.checkupCard && (
+        {message.reviewReport && (
+          <ReviewReport
+            completionRate={message.reviewReport.completionRate}
+            totalCompleted={message.reviewReport.totalCompleted}
+            totalTasks={message.reviewReport.totalTasks}
+            consecutiveDays={message.reviewReport.consecutiveDays}
+            mostCommonSymptomName={message.reviewReport.mostCommonSymptomName}
+            symptomTrend={message.reviewReport.symptomTrend}
+            nextAdvice={message.reviewReport.nextAdvice}
+          />
+        )}
+        {message.checkupCard && !message.reviewReport && (
           <CheckupCard
             date={message.checkupCard.date}
             symptomNames={message.checkupCard.symptomNames}
@@ -32,7 +44,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, dentistAvatar }) => {
             trend={message.checkupCard.trend}
           />
         )}
-        {message.imageUrl && !message.checkupCard && (
+        {message.imageUrl && !message.checkupCard && !message.reviewReport && (
           <Image
             className={styles.msgImage}
             src={message.imageUrl}
@@ -40,7 +52,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, dentistAvatar }) => {
             onError={(e) => console.error('[ChatBubble] image load error', e)}
           />
         )}
-        {message.content && !message.checkupCard && (
+        {message.content && !message.checkupCard && !message.reviewReport && (
           <Text className={styles.msgText}>{message.content}</Text>
         )}
       </View>

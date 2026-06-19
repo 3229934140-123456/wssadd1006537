@@ -20,6 +20,7 @@ const CheckupPage: React.FC = () => {
     getConsecutiveSymptomDays,
     getTodayCheckup,
     sendCheckupCard,
+    checkupRecords,
   } = useAppStore();
 
   const [showTrend, setShowTrend] = useState(true);
@@ -33,7 +34,10 @@ const CheckupPage: React.FC = () => {
     [currentLevel]
   );
 
-  const todayCheckup = useMemo(() => getTodayCheckup(), [getTodayCheckup]);
+  const todayCheckup = useMemo(
+    () => getTodayCheckup(),
+    [getTodayCheckup, checkupRecords]
+  );
 
   const recentCheckups = useMemo(
     () =>
@@ -42,16 +46,16 @@ const CheckupPage: React.FC = () => {
         level: r.level,
         symptomCount: r.symptoms.length,
       })),
-    [getRecentCheckups]
+    [getRecentCheckups, checkupRecords]
   );
 
   const bleedingDays = useMemo(
     () => getConsecutiveSymptomDays('brush-bleeding'),
-    [getConsecutiveSymptomDays]
+    [getConsecutiveSymptomDays, checkupRecords]
   );
   const sensitiveDays = useMemo(
     () => getConsecutiveSymptomDays('cold-sensitive'),
-    [getConsecutiveSymptomDays]
+    [getConsecutiveSymptomDays, checkupRecords]
   );
 
   const hasConsecutiveWarning = bleedingDays >= 3 || sensitiveDays >= 3;
@@ -61,10 +65,6 @@ const CheckupPage: React.FC = () => {
     Taro.showToast({
       title: '自查结果已记录',
       icon: 'success',
-    });
-    console.info('[Checkup] symptoms submitted', {
-      selectedSymptoms,
-      level: currentLevel,
     });
   };
 
