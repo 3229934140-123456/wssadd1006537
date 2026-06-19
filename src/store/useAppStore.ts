@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import Taro from '@tarojs/taro';
 import type { TaskStatus, SymptomLevel, TaskRecord, ChatMessage } from '@/types';
+import { getTasksForDay } from '@/data/tasks';
 import dayjs from 'dayjs';
 
 interface CheckupRecord {
@@ -39,9 +40,27 @@ interface AppState {
   getConsecutiveSymptomDays: (symptomId: string) => number;
 
   sendMessage: (convId: string, content: string, imageUrl?: string) => void;
+  sendCheckupCard: (convId: string, cardData: {
+    date: string;
+    symptoms: string[];
+    symptomNames: string[];
+    level: SymptomLevel;
+    trend: { date: string; symptomCount: number }[];
+  }) => void;
   setActiveConversation: (convId: string | null) => void;
   markConversationRead: (convId: string) => void;
   getTotalUnread: () => number;
+
+  // 复盘统计
+  getReviewStats: () => {
+    completionRate: number;
+    totalCompleted: number;
+    totalTasks: number;
+    consecutiveDays: number;
+    mostCommonSymptom: string | null;
+    symptomTrend: { date: string; symptomCount: number }[];
+    nextAdvice: string;
+  };
 }
 
 const STORAGE_KEY = 'dental_care_state';
@@ -296,6 +315,75 @@ const useAppStore = create<AppState>((set, get) => {
       }, 2000);
     },
 
+    sendCheckupCard: (convId, cardData) => {
+      const timestamp = dayjs().format('YYYY-MM-DD HH:mm');
+      const newMsg: ChatMessage = {
+        id: `msg-${Date.now()}`,
+        sender: 'patient',
+        content: '',
+        timestamp,
+        checkupCard: {
+          date: cardData.date,
+          symptoms: cardData.symptoms,
+          symptomNames: cardData.symptomNames,
+          level: cardData.level,
+          trend: cardData.trend,
+        },
+      };
+
+      set((state) => {
+        const conv = state.conversations[convId] || {
+          unreadCount: 0,
+          lastMessage: '',
+          lastTime: '',
+          messages: [],
+        };
+        const newConv = {
+          ...conv,
+          messages: [...conv.messages, newMsg],
+          lastMessage: `[自查报告] ${cardData.symptomNames.join('、') || '无不适'}`,
+          lastTime: dayjs(timestamp).format('HH:mm'),
+        };
+        const newConversations = {
+          ...state.conversations,
+          [convId]: newConv,
+        };
+        const newState = { conversations: newConversations };
+        saveToStorage({ ...state, ...newState });
+        return newState;
+      });
+
+      setTimeout(() => {
+        const replyTime = dayjs().format('YYYY-MM-DD HH:mm');
+        const replyMsg: ChatMessage = {
+          id: `msg-${Date.now() + 1}`,
+          sender: 'dentist',
+          content: '收到您的自查报告，我仔细看一下您的症状情况，稍后给您回复。',
+          timestamp: replyTime,
+        };
+
+        set((state) => {
+          const conv = state.conversations[convId];
+          if (!conv) return state;
+          const isActive = state.activeConversation === convId;
+          const newConv = {
+            ...conv,
+            messages: [...conv.messages, replyMsg],
+            lastMessage: replyMsg.content,
+            lastTime: dayjs(replyTime).format('HH:mm'),
+            unreadCount: isActive ? 0 : conv.unreadCount + 1,
+          };
+          const newConversations = {
+            ...state.conversations,
+            [convId]: newConv,
+          };
+          const newState = { conversations: newConversations };
+          saveToStorage({ ...state, ...newState });
+          return newState;
+        });
+      }, 2000);
+    },
+
     markConversationRead: (convId) => {
       set((state) => {
         const conv = state.conversations[convId];
@@ -314,6 +402,82 @@ const useAppStore = create<AppState>((set, get) => {
     getTotalUnread: () => {
       const convs = get().conversations;
       return Object.values(convs).reduce((sum, conv) => sum + conv.unreadCount, 0);
+    },
+
+    getReviewStats: () => {
+      const { startDate, taskRecords, checkupRecords, currentDay } = get();
+      const daysPassed = Math.min(currentDay, 30);
+
+      let totalCompleted = 0;
+      let totalTasks = 0;
+      let consecutiveDays = 0;
+
+      const symptomCountMap = new Map<string, number>();
+
+      for (let i = 1; i <= daysPassed; i++) {
+        const date = dayjs(startDate).add(i - 1, 'day').format('YYYY-MM-DD');
+        const dayTasks = getTasksForDay(i);
+        const records = taskRecords[date] || [];
+        const completed = records.filter((r) => r.status === 'completed').length;
+
+        totalTasks += dayTasks.length;
+        totalCompleted += completed;
+
+        if (completed === dayTasks.length && dayTasks.length > 0) {
+          consecutiveDays++;
+        } else if (consecutiveDays > 0) {
+          consecutiveDays = 0;
+        }
+      }
+
+      checkupRecords.forEach((record) => {
+        record.symptoms.forEach((symptomId) => {
+          symptomCountMap.set(symptomId, (symptomCountMap.get(symptomId) || 0) + 1);
+        });
+      });
+
+      let mostCommonSymptom: string | null = null;
+      let maxCount = 0;
+      symptomCountMap.forEach((count, id) => {
+        if (count > maxCount) {
+          maxCount = count;
+          mostCommonSymptom = id;
+        }
+      });
+
+      const symptomTrend = getRecentCheckups(7).map((r) => ({
+        date: r.date,
+        symptomCount: r.symptoms.length,
+      }));
+
+      let nextAdvice = '';
+      const bleedingDays = getConsecutiveSymptomDays('brush-bleeding');
+      const sensitiveDays = getConsecutiveSymptomDays('cold-sensitive');
+      const overallComplection = totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
+
+      if (bleedingDays >= 3 || sensitiveDays >= 3) {
+        nextAdvice = '您已连续多日出现出血或敏感症状，建议尽快联系医生复诊检查。';
+      } else if (overallComplection < 60) {
+        nextAdvice = '护理任务完成率较低，建议每天按时完成口腔清洁任务，坚持就是胜利！';
+      } else if (currentDay <= 7) {
+        nextAdvice = '继续保持基础清洁，饭后漱口、巴氏刷牙要坚持，注意观察牙龈出血情况。';
+      } else if (currentDay <= 14) {
+        nextAdvice = '进入深度护理期，记得每天使用牙线，可开始尝试牙间刷清洁较大牙缝。';
+      } else if (currentDay <= 21) {
+        nextAdvice = '习惯正在巩固，可加入舌苔清洁和牙龈按摩，全面提升口腔健康。';
+      } else {
+        nextAdvice = '恭喜您即将完成30天护理！建议保持现有习惯，定期复诊检查牙周健康。';
+      }
+
+      return {
+        completionRate: totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0,
+        totalCompleted,
+        totalTasks,
+        consecutiveDays,
+        mostCommonSymptom,
+        symptomTrend,
+        nextAdvice,
+      };
     },
   };
 });

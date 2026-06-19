@@ -111,6 +111,20 @@ const ProfilePage: React.FC = () => {
         </View>
       </View>
 
+      <Text className={styles.sectionTitle}>护理总结</Text>
+      <View className={styles.menuCard}>
+        <View
+          className={styles.menuItem}
+          onClick={() => Taro.navigateTo({ url: '/pages/review/index' })}
+        >
+          <View className={styles.menuLeft}>
+            <Text className={styles.menuIcon}>📈</Text>
+            <Text className={styles.menuText}>30天护理复盘</Text>
+          </View>
+          <Text className={styles.menuArrow}>›</Text>
+        </View>
+      </View>
+
       <Text className={styles.sectionTitle}>更多服务</Text>
       <View className={styles.menuCard}>
         {MENU_ITEMS.map((item) => (

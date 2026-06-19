@@ -51,4 +51,11 @@ export interface ChatMessage {
   content: string;
   imageUrl?: string;
   timestamp: string;
+  checkupCard?: {
+    date: string;
+    symptoms: string[];
+    level: SymptomLevel;
+    symptomNames: string[];
+    trend: { date: string; symptomCount: number }[];
+  };
 }

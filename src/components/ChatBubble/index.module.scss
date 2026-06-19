@@ -23,21 +23,22 @@
 }
 
 .bubble {
-  max-width: 500rpx;
+  max-width: 560rpx;
   padding: $spacing-md $spacing-lg;
   border-radius: $radius-md;
   position: relative;
 }
 
 .bubbleLeft {
-  background: $color-bg-card;
-  border-top-left-radius: $radius-xs;
-  box-shadow: $shadow-card;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
 }
 
 .bubbleRight {
   background: $color-primary;
   border-top-right-radius: $radius-xs;
+  padding: $spacing-md $spacing-lg;
 }
 
 .msgText {

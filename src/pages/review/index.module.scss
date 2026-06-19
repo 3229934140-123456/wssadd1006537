@@ -1,0 +1,177 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.navBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 88rpx;
+  background: $color-bg-card;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $spacing-lg;
+  padding-top: calc(#{$spacing-md} + env(safe-area-inset-top));
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  z-index: 100;
+}
+
+.navBack {
+  width: 60rpx;
+  font-size: 48rpx;
+  color: $color-text-primary;
+  line-height: 1;
+}
+
+.navTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.scrollArea {
+  padding: $spacing-lg $page-padding;
+  padding-top: calc(#{$spacing-lg} + 120rpx + env(safe-area-inset-top));
+  padding-bottom: 60rpx;
+}
+
+.headerCard {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 4rpx 20rpx rgba($color-primary, 0.25);
+}
+
+.headerTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  margin-bottom: $spacing-xs;
+  display: block;
+}
+
+.headerSubtitle {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+  display: block;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+}
+
+.statCard {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  @include flex-center;
+  flex-direction: column;
+}
+
+.statValue {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.statLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.sectionCard {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.sectionIcon {
+  font-size: 36rpx;
+  margin-right: $spacing-sm;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.symptomResult {
+  background: linear-gradient(135deg, #FFF7E8 0%, #FFE8D9 100%);
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+}
+
+.symptomName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-warning;
+  margin-bottom: $spacing-xs;
+  display: block;
+}
+
+.symptomDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.noSymptom {
+  background: linear-gradient(135deg, #E8FFEA 0%, #D9FFE0 100%);
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  @include flex-center;
+}
+
+.noSymptomText {
+  font-size: $font-size-md;
+  color: $color-success;
+  font-weight: $font-weight-semibold;
+}
+
+.adviceCard {
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  border-left: 6rpx solid $color-primary;
+}
+
+.adviceText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  line-height: 1.7;
+}
+
+.encourageCard {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E8F4FF 100%);
+  border-radius: $radius-md;
+  padding: $spacing-xl;
+  @include flex-center;
+  text-align: center;
+}
+
+.encourageText {
+  font-size: $font-size-md;
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+  line-height: 1.6;
+}

@@ -1,0 +1,175 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, #F8FAFF 0%, #F0F5FF 100%);
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.cardIcon {
+  font-size: 40rpx;
+}
+
+.cardTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: block;
+}
+
+.cardDate {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+}
+
+.levelBadge {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-round;
+}
+
+.levelNormal {
+  background: rgba($color-success, 0.12);
+  .levelText { color: $color-success; }
+}
+
+.levelCaution {
+  background: rgba($color-warning, 0.12);
+  .levelText { color: $color-warning; }
+}
+
+.levelUrgent {
+  background: rgba($color-error, 0.12);
+  .levelText { color: $color-error; }
+}
+
+.levelText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+}
+
+.cardContent {
+  padding: $spacing-lg;
+}
+
+.symptomSection {
+  margin-bottom: $spacing-lg;
+}
+
+.sectionLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+  display: block;
+}
+
+.symptomText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.trendSection {
+  margin-bottom: $spacing-lg;
+}
+
+.trendChart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 120rpx;
+  padding: $spacing-sm 0;
+  gap: $spacing-xs;
+}
+
+.trendBarWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.trendBarContainer {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.trendBar {
+  width: 60%;
+  background: linear-gradient(180deg, $color-primary-light 0%, $color-primary 100%);
+  border-radius: 4rpx 4rpx 0 0;
+  min-height: 8rpx;
+}
+
+.trendLabel {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+}
+
+.adviceSection {
+  background: $color-bg-hover;
+  border-radius: $radius-sm;
+  padding: $spacing-md;
+}
+
+.adviceText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.compactCard {
+  background: $color-bg-hover;
+  border-radius: $radius-sm;
+  padding: $spacing-md;
+}
+
+.compactHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+}
+
+.compactDate {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.compactLevel {
+  padding: 2rpx 12rpx;
+  border-radius: $radius-round;
+}
+
+.compactLevelText {
+  font-size: 20rpx;
+  font-weight: $font-weight-semibold;
+}
+
+.compactSymptoms {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: 1.4;
+}

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import classnames from 'classnames';
 import TaskCard from '@/components/TaskCard';
 import CalendarView from '@/components/CalendarView';
@@ -35,11 +35,17 @@ const HomePage: React.FC = () => {
     setActiveView,
     getTaskStatus,
     getDayRecords,
+    taskRecords,
   } = useAppStore();
 
   const [selectedDate, setSelectedDate] = useState<string>(
     dayjs().format('YYYY-MM-DD')
   );
+  const [, setRefreshKey] = useState(0);
+
+  useDidShow(() => {
+    setRefreshKey((k) => k + 1);
+  });
 
   const selectedDayNumber = useMemo(() => {
     const day = dayjs(selectedDate).diff(dayjs(startDate), 'day') + 1;
@@ -55,12 +61,12 @@ const HomePage: React.FC = () => {
 
   const dayRecords = useMemo(
     () => getDayRecords(selectedDate),
-    [selectedDate, getDayRecords]
+    [selectedDate, getDayRecords, taskRecords]
   );
 
   const completedCount = useMemo(
     () => dayRecords.filter((r) => r.status === 'completed').length,
-    [dayRecords]
+    [dayRecords, taskRecords]
   );
 
   const totalCount = dayTasks.length;
@@ -95,13 +101,20 @@ const HomePage: React.FC = () => {
   const tip = getTipForDay(selectedDayNumber);
   const dayLabel = getDayLabel(selectedDayNumber);
   const today = dayjs().format('YYYY-MM-DD');
-  const todayRecords = getDayRecords(today);
-  const todayCompleted = todayRecords.filter(
-    (r) => r.status === 'completed'
-  ).length;
+  const todayRecords = useMemo(
+    () => getDayRecords(today),
+    [today, getDayRecords, taskRecords]
+  );
+  const todayCompleted = useMemo(
+    () => todayRecords.filter((r) => r.status === 'completed').length,
+    [todayRecords, taskRecords]
+  );
   const todayTotal = getTasksForDay(currentDay).length;
-  const todayPercent =
-    todayTotal > 0 ? Math.round((todayCompleted / todayTotal) * 100) : 0;
+  const todayPercent = useMemo(
+    () =>
+      todayTotal > 0 ? Math.round((todayCompleted / todayTotal) * 100) : 0,
+    [todayCompleted, todayTotal]
+  );
 
   return (
     <View className={styles.container}>

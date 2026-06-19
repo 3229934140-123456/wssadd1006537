@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import classnames from 'classnames';
 import type { ChatMessage } from '@/types';
+import CheckupCard from '@/components/CheckupCard';
 import styles from './index.module.scss';
 
 interface ChatBubbleProps {
@@ -23,7 +24,15 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, dentistAvatar }) => {
         />
       )}
       <View className={classnames(styles.bubble, isDentist ? styles.bubbleLeft : styles.bubbleRight)}>
-        {message.imageUrl && (
+        {message.checkupCard && (
+          <CheckupCard
+            date={message.checkupCard.date}
+            symptomNames={message.checkupCard.symptomNames}
+            level={message.checkupCard.level}
+            trend={message.checkupCard.trend}
+          />
+        )}
+        {message.imageUrl && !message.checkupCard && (
           <Image
             className={styles.msgImage}
             src={message.imageUrl}
@@ -31,7 +40,9 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, dentistAvatar }) => {
             onError={(e) => console.error('[ChatBubble] image load error', e)}
           />
         )}
-        {message.content && <Text className={styles.msgText}>{message.content}</Text>}
+        {message.content && !message.checkupCard && (
+          <Text className={styles.msgText}>{message.content}</Text>
+        )}
       </View>
     </View>
   );

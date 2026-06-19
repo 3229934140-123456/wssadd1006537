@@ -5,7 +5,8 @@ export default defineAppConfig({
     'pages/messages/index',
     'pages/profile/index',
     'pages/taskDetail/index',
-    'pages/chat/index'
+    'pages/chat/index',
+    'pages/review/index'
   ],
   window: {
     backgroundTextStyle: 'light',

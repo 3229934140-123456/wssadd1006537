@@ -19,6 +19,7 @@ const CheckupPage: React.FC = () => {
     getRecentCheckups,
     getConsecutiveSymptomDays,
     getTodayCheckup,
+    sendCheckupCard,
   } = useAppStore();
 
   const [showTrend, setShowTrend] = useState(true);
@@ -70,14 +71,25 @@ const CheckupPage: React.FC = () => {
   const handleConsult = () => {
     const symptomNames = selectedSymptoms
       .map((id) => symptoms.find((s) => s.id === id)?.name)
-      .filter(Boolean)
-      .join('、');
-    const text = encodeURIComponent(
-      `医生您好，我这几天感觉${symptomNames}，想咨询一下情况。`
-    );
-    Taro.navigateTo({
-      url: `/pages/chat/index?convId=conv-1&prefill=${text}`,
+      .filter(Boolean) as string[];
+
+    const trend = recentCheckups
+      .slice()
+      .reverse()
+      .map((r) => ({
+        date: r.date,
+        symptomCount: r.symptomCount,
+      }));
+
+    sendCheckupCard('conv-1', {
+      date: dayjs().format('YYYY-MM-DD'),
+      symptoms: selectedSymptoms,
+      symptomNames,
+      level: currentLevel,
+      trend,
     });
+
+    Taro.navigateTo({ url: `/pages/chat/index?convId=conv-1` });
   };
 
   const levelClassMap: Record<SymptomLevel, string> = {
