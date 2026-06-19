@@ -7,10 +7,40 @@
   background: $color-bg-page;
 }
 
+.navBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 88rpx;
+  background: $color-bg-card;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $spacing-lg;
+  padding-top: calc(#{$spacing-md} + env(safe-area-inset-top));
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  z-index: 100;
+}
+
+.navBack {
+  width: 60rpx;
+  font-size: 48rpx;
+  color: $color-text-primary;
+  line-height: 1;
+}
+
+.navTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
 .messageList {
   flex: 1;
   padding: $spacing-lg $page-padding;
-  padding-bottom: 240rpx;
+  padding-bottom: 320rpx;
+  padding-top: 180rpx;
   height: 100vh;
   box-sizing: border-box;
 }

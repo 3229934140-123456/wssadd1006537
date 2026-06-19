@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, Image, ScrollView, Input } from '@tarojs/components';
-import Taro, { useRouter } from '@tarojs/taro';
+import Taro, { useRouter, useDidHide, useDidShow } from '@tarojs/taro';
 import ChatBubble from '@/components/ChatBubble';
 import useAppStore from '@/store/useAppStore';
 import dayjs from 'dayjs';
@@ -21,9 +21,14 @@ const ChatPage: React.FC = () => {
   const router = useRouter();
   const convId = router.params.convId || 'conv-1';
   const prefill = router.params.prefill || '';
-  const scrollRef = useRef<any>(null);
 
-  const { conversations, sendMessage, markConversationRead } = useAppStore();
+  const {
+    conversations,
+    sendMessage,
+    markConversationRead,
+    setActiveConversation,
+  } = useAppStore();
+
   const [inputValue, setInputValue] = useState('');
   const [selectedPhoto, setSelectedPhoto] = useState<string>('');
 
@@ -34,16 +39,34 @@ const ChatPage: React.FC = () => {
 
   const messages = conversation?.messages || [];
   const dentistAvatar = DENTIST_INFO[convId]?.avatar || '';
+  const dentistName = DENTIST_INFO[convId]?.name || '医生';
 
   useEffect(() => {
     if (prefill) {
-      setInputValue(decodeURIComponent(prefill));
+      try {
+        setInputValue(decodeURIComponent(prefill));
+      } catch (e) {
+        setInputValue(prefill);
+      }
     }
   }, [prefill]);
 
+  useDidShow(() => {
+    setActiveConversation(convId);
+    markConversationRead(convId);
+  });
+
+  useDidHide(() => {
+    setActiveConversation(null);
+  });
+
   useEffect(() => {
     markConversationRead(convId);
-  }, [convId, markConversationRead]);
+    setActiveConversation(convId);
+    return () => {
+      setActiveConversation(null);
+    };
+  }, [convId, markConversationRead, setActiveConversation]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -59,7 +82,7 @@ const ChatPage: React.FC = () => {
             }
           })
           .exec();
-      }, 100);
+      }, 200);
     }
   }, [messages.length]);
 
@@ -71,7 +94,6 @@ const ChatPage: React.FC = () => {
       success: (res) => {
         const path = res.tempFilePaths[0];
         setSelectedPhoto(path);
-        console.info('[Chat] photo selected', path);
       },
       fail: (err) => {
         console.error('[Chat] choose image error', err);
@@ -100,10 +122,6 @@ const ChatPage: React.FC = () => {
     handleSend();
   };
 
-  const isToday = (timestamp: string) => {
-    return dayjs(timestamp).isSame(dayjs(), 'day');
-  };
-
   const shouldShowDate = (index: number) => {
     if (index === 0) return true;
     const prevDate = dayjs(messages[index - 1].timestamp).format('YYYY-MM-DD');
@@ -119,13 +137,17 @@ const ChatPage: React.FC = () => {
     return d.format('YYYY年MM月DD日');
   };
 
-  const formatTime = (timestamp: string) => {
-    return dayjs(timestamp).format('HH:mm');
-  };
-
   return (
     <View className={styles.container}>
-      <ScrollView className={styles.messageList} scrollY scrollIntoView="">
+      <View className={styles.navBar}>
+        <Text className={styles.navBack} onClick={() => Taro.navigateBack()}>
+          ‹
+        </Text>
+        <Text className={styles.navTitle}>{dentistName}</Text>
+        <View style={{ width: 60 }} />
+      </View>
+
+      <ScrollView className={styles.messageList} scrollY scrollIntoView="msg-bottom" scrollWithAnimation>
         {messages.map((msg, idx) => (
           <View key={msg.id}>
             {shouldShowDate(idx) && (

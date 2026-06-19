@@ -23,9 +23,13 @@ interface AppState {
   checkupRecords: CheckupRecord[];
   conversations: Record<string, ConversationState>;
   activeView: 'today' | 'calendar';
+  selectedSymptoms: string[];
+  activeConversation: string | null;
 
   setStartDate: (date: string) => void;
   setActiveView: (view: 'today' | 'calendar') => void;
+  toggleSymptom: (symptomId: string) => void;
+  clearSelectedSymptoms: () => void;
   updateTaskStatus: (taskId: string, status: TaskStatus, date?: string) => void;
   getTaskStatus: (taskId: string, date?: string) => TaskStatus;
   getDayRecords: (date: string) => TaskRecord[];
@@ -35,6 +39,7 @@ interface AppState {
   getConsecutiveSymptomDays: (symptomId: string) => number;
 
   sendMessage: (convId: string, content: string, imageUrl?: string) => void;
+  setActiveConversation: (convId: string | null) => void;
   markConversationRead: (convId: string) => void;
   getTotalUnread: () => number;
 }
@@ -105,6 +110,8 @@ function getInitialState(): AppState {
       },
     },
     activeView: 'today',
+    selectedSymptoms: [],
+    activeConversation: null,
   };
 }
 
@@ -123,6 +130,21 @@ const useAppStore = create<AppState>((set, get) => {
 
     setActiveView: (view) => {
       set({ activeView: view });
+    },
+
+    toggleSymptom: (symptomId) => {
+      set((state) => {
+        const has = state.selectedSymptoms.includes(symptomId);
+        return {
+          selectedSymptoms: has
+            ? state.selectedSymptoms.filter((id) => id !== symptomId)
+            : [...state.selectedSymptoms, symptomId],
+        };
+      });
+    },
+
+    clearSelectedSymptoms: () => {
+      set({ selectedSymptoms: [] });
     },
 
     updateTaskStatus: (taskId, status, date) => {
@@ -167,7 +189,7 @@ const useAppStore = create<AppState>((set, get) => {
         const newCheckups = [newRecord, ...filtered].sort((a, b) =>
           b.date.localeCompare(a.date)
         );
-        const newState = { checkupRecords: newCheckups };
+        const newState = { checkupRecords: newCheckups, selectedSymptoms: [] };
         saveToStorage({ ...state, ...newState });
         return newState;
       });
@@ -205,6 +227,10 @@ const useAppStore = create<AppState>((set, get) => {
         }
       }
       return count;
+    },
+
+    setActiveConversation: (convId) => {
+      set({ activeConversation: convId });
     },
 
     sendMessage: (convId, content, imageUrl) => {
@@ -251,12 +277,13 @@ const useAppStore = create<AppState>((set, get) => {
         set((state) => {
           const conv = state.conversations[convId];
           if (!conv) return state;
+          const isActive = state.activeConversation === convId;
           const newConv = {
             ...conv,
             messages: [...conv.messages, replyMsg],
             lastMessage: replyMsg.content,
             lastTime: dayjs(replyTime).format('HH:mm'),
-            unreadCount: conv.unreadCount + 1,
+            unreadCount: isActive ? 0 : conv.unreadCount + 1,
           };
           const newConversations = {
             ...state.conversations,
