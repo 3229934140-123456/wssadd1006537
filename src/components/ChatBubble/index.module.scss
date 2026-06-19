@@ -1,0 +1,62 @@
+@use '@/styles/variables.scss' as *;
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: $spacing-lg;
+}
+
+.rowLeft {
+  justify-content: flex-start;
+}
+
+.rowRight {
+  justify-content: flex-end;
+}
+
+.avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: $radius-round;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.bubble {
+  max-width: 500rpx;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-md;
+  position: relative;
+}
+
+.bubbleLeft {
+  background: $color-bg-card;
+  border-top-left-radius: $radius-xs;
+  box-shadow: $shadow-card;
+}
+
+.bubbleRight {
+  background: $color-primary;
+  border-top-right-radius: $radius-xs;
+}
+
+.msgText {
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+  word-break: break-all;
+}
+
+.bubbleLeft .msgText {
+  color: $color-text-primary;
+}
+
+.bubbleRight .msgText {
+  color: $color-text-white;
+}
+
+.msgImage {
+  width: 300rpx;
+  height: 300rpx;
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-sm;
+}

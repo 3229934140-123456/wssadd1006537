@@ -1,0 +1,88 @@
+import type { TaskItem } from '@/types';
+
+export const tasks: TaskItem[] = [
+  {
+    id: 'rinse',
+    title: '饭后漱口',
+    icon: '💧',
+    description: '每次饭后用温水或淡盐水漱口30秒',
+    guide: '饭后食物残渣容易滞留在牙齿间隙和牙龈沟内，及时漱口可以有效减少细菌滋生。建议使用37°C左右的温水，含在口中轻轻鼓动双颊，让水流冲刷牙齿各面，持续30秒后吐出。洁治后牙龈可能较敏感，避免使用过冷或过热的水。',
+    imageUrl: 'https://picsum.photos/id/312/750/500',
+    dayRange: [1, 30],
+    category: '基础清洁',
+  },
+  {
+    id: 'bass-brush',
+    title: '巴氏刷牙打卡',
+    icon: '🪥',
+    description: '每天早晚使用巴氏刷牙法刷牙2分钟',
+    guide: '巴氏刷牙法是目前国际公认最有效的刷牙方法：将牙刷与牙面呈45度角，放在牙龈和牙齿交界处，轻柔地做小圆弧状来回刷动，每次刷2-3颗牙，每个区域刷10次。上牙往下刷，下牙往上刷，咬合面来回刷。每次刷牙时间不少于2分钟，建议早晚各一次。',
+    imageUrl: 'https://picsum.photos/id/401/750/500',
+    dayRange: [1, 30],
+    category: '基础清洁',
+  },
+  {
+    id: 'floss',
+    title: '使用牙线',
+    icon: '🧵',
+    description: '每天至少一次使用牙线清洁牙缝',
+    guide: '牙线可以清除牙刷无法触及的牙缝食物残渣和菌斑。取约30-40cm长牙线，两端绕在中指上，用拇指和食指操控约2cm的牙线段。将牙线轻轻滑入牙缝，紧贴一侧牙齿表面呈C形包绕，上下刮动4-5次，再贴另一侧重复。每个牙缝都不要遗漏。洁治后初期牙龈可能稍有出血，属正常现象。',
+    imageUrl: 'https://picsum.photos/id/580/750/500',
+    dayRange: [3, 30],
+    category: '深度护理',
+  },
+  {
+    id: 'observe-bleeding',
+    title: '观察牙龈出血',
+    icon: '🔍',
+    description: '刷牙时观察是否有牙龈出血情况',
+    guide: '洁治后1-2周内，刷牙时少量出血属于正常现象，因为牙龈正在恢复健康。如果出血量较多或持续时间超过2周，建议及时联系医生。观察要点：①出血的颜色（鲜红/暗红）②出血的量（点状/片状）③是否伴有疼痛。记录每天的情况，方便医生判断恢复进度。',
+    imageUrl: 'https://picsum.photos/id/625/750/500',
+    dayRange: [1, 14],
+    category: '习惯养成',
+  },
+  {
+    id: 'interdental-brush',
+    title: '牙间刷清洁',
+    icon: '🔄',
+    description: '使用牙间刷清洁较大牙缝',
+    guide: '如果牙缝较大（常见于牙龈萎缩患者），牙间刷比牙线更高效。选择合适尺寸的牙间刷（医生会推荐），将刷头倾斜插入牙缝，轻轻来回刷动2-3次。注意不要用力过猛，避免损伤牙龈。每天使用1次即可，建议在晚间刷牙后使用。',
+    imageUrl: 'https://picsum.photos/id/835/750/500',
+    dayRange: [7, 30],
+    category: '深度护理',
+  },
+  {
+    id: 'mouthwash',
+    title: '使用漱口水',
+    icon: '🫧',
+    description: '饭后或刷牙后使用医生推荐的漱口水',
+    guide: '洁治后医生可能会推荐含氯己定的治疗性漱口水，连续使用1-2周可以有效抑制细菌。每次取10-15ml，含在口中30秒后吐出，使用后30分钟内不要进食或饮水。注意：治疗性漱口水不宜长期使用，2周后可更换为日常护理型漱口水。',
+    imageUrl: 'https://picsum.photos/id/1080/750/500',
+    dayRange: [1, 14],
+    category: '基础清洁',
+  },
+  {
+    id: 'tongue-clean',
+    title: '舌苔清洁',
+    icon: '👅',
+    description: '每天清洁舌苔，改善口气',
+    guide: '舌苔是细菌和食物残渣的聚集地，清洁舌苔可以有效改善口气。使用专用舌苔刷或牙刷背面的舌苔清洁器，从舌根向舌尖方向轻轻刮3-5次，每次用清水冲洗清洁器。力度要轻柔，避免引起呕吐反射。建议每天早晨刷牙后进行。',
+    imageUrl: 'https://picsum.photos/id/292/750/500',
+    dayRange: [5, 30],
+    category: '习惯养成',
+  },
+  {
+    id: 'gum-massage',
+    title: '牙龈按摩',
+    icon: '🤲',
+    description: '每天按摩牙龈促进血液循环',
+    guide: '洁治后适当按摩牙龈可以促进血液循环，帮助牙龈恢复健康。方法：洗净双手，用食指指腹放在牙龈上，做轻柔的圆形按摩，每次3-5分钟，早晚各一次。也可以用舌头轻轻舔舐牙龈代替手指按摩。注意力度要轻，如果感到疼痛应立即停止。',
+    imageUrl: 'https://picsum.photos/id/431/750/500',
+    dayRange: [3, 30],
+    category: '习惯养成',
+  },
+];
+
+export function getTasksForDay(day: number): TaskItem[] {
+  return tasks.filter((task) => day >= task.dayRange[0] && day <= task.dayRange[1]);
+}

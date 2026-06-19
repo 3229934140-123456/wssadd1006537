@@ -1,0 +1,69 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.levelNormal {
+  background: $color-level-normal-bg;
+  .indicator {
+    background: $color-level-normal;
+  }
+  .label {
+    color: $color-level-normal;
+  }
+  .description {
+    color: #009a20;
+  }
+}
+
+.levelCaution {
+  background: $color-level-caution-bg;
+  .indicator {
+    background: $color-level-caution;
+  }
+  .label {
+    color: $color-level-caution;
+  }
+  .description {
+    color: #d96800;
+  }
+}
+
+.levelUrgent {
+  background: $color-level-urgent-bg;
+  .indicator {
+    background: $color-level-urgent;
+  }
+  .label {
+    color: $color-level-urgent;
+  }
+  .description {
+    color: #cb2634;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.indicator {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+  margin-right: $spacing-sm;
+}
+
+.label {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+}
+
+.description {
+  font-size: $font-size-sm;
+  line-height: $line-height-loose;
+}

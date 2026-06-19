@@ -1,0 +1,132 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  padding-bottom: 200rpx;
+}
+
+.coverImage {
+  width: 100%;
+  height: 400rpx;
+}
+
+.content {
+  padding: 0 $page-padding;
+  margin-top: -$spacing-xl;
+  position: relative;
+}
+
+.taskHeader {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.taskIconRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.taskIcon {
+  font-size: 56rpx;
+  margin-right: $spacing-md;
+}
+
+.taskTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  flex: 1;
+}
+
+.categoryTag {
+  display: inline-flex;
+  padding: 4rpx 16rpx;
+  background: rgba($color-primary, 0.06);
+  border-radius: $radius-xs;
+  margin-bottom: $spacing-sm;
+}
+
+.categoryText {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  white-space: nowrap;
+}
+
+.taskDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  display: block;
+}
+
+.guideCard {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.guideTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  display: block;
+}
+
+.guideText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  display: block;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-lg $page-padding;
+  padding-bottom: calc(#{$spacing-lg} + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: $spacing-md;
+}
+
+.feedbackBtn {
+  flex: 1;
+  height: $button-height-md;
+  border-radius: $radius-button;
+  @include button-reset;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.btnCompleted {
+  background: $color-task-completed;
+  color: $color-text-white;
+}
+
+.btnSkipped {
+  background: $color-task-skipped-bg;
+  color: $color-task-skipped;
+  border: 2rpx solid $color-border;
+}
+
+.btnUncomfortable {
+  background: $color-task-uncomfortable-bg;
+  color: $color-task-uncomfortable;
+  border: 2rpx solid rgba($color-task-uncomfortable, 0.3);
+}

@@ -1,0 +1,126 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  display: flex;
+  align-items: center;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.left {
+  margin-right: $spacing-lg;
+  flex-shrink: 0;
+}
+
+.iconWrap {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, rgba($color-primary, 0.1) 0%, rgba($color-primary-light, 0.15) 100%);
+  @include flex-center;
+}
+
+.icon {
+  font-size: 44rpx;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+  margin-right: $spacing-sm;
+}
+
+.statusBadge {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-round;
+  flex-shrink: 0;
+}
+
+.statusText {
+  font-size: $font-size-xs;
+  white-space: nowrap;
+}
+
+.statusPending {
+  background: $color-divider;
+  .statusText {
+    color: $color-text-tertiary;
+  }
+}
+
+.statusCompleted {
+  background: $color-task-completed-bg;
+  .statusText {
+    color: $color-task-completed;
+  }
+}
+
+.statusSkipped {
+  background: $color-task-skipped-bg;
+  .statusText {
+    color: $color-task-skipped;
+  }
+}
+
+.statusUncomfortable {
+  background: $color-task-uncomfortable-bg;
+  .statusText {
+    color: $color-task-uncomfortable;
+  }
+}
+
+.desc {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  @include text-ellipsis-multi(1);
+  margin-bottom: $spacing-xs;
+}
+
+.categoryTag {
+  display: inline-flex;
+  padding: 2rpx 12rpx;
+  background: rgba($color-primary, 0.06);
+  border-radius: $radius-xs;
+}
+
+.categoryText {
+  font-size: 20rpx;
+  color: $color-primary;
+  white-space: nowrap;
+}
+
+.arrow {
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
+  @include flex-center;
+}
+
+.arrowIcon {
+  font-size: 36rpx;
+  color: $color-text-disabled;
+  font-weight: $font-weight-bold;
+}
