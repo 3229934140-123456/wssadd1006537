@@ -63,6 +63,54 @@
   display: block;
 }
 
+.dateTag {
+  display: inline-block;
+  margin-top: $spacing-sm;
+  padding: 4rpx 16rpx;
+  background: $color-divider;
+  border-radius: $radius-xs;
+}
+
+.dateTagText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  white-space: nowrap;
+}
+
+.currentStatus {
+  margin-top: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  display: inline-flex;
+  align-items: center;
+}
+
+.currentStatusText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}
+
+.statusCompleted {
+  background: $color-task-completed-bg;
+  .currentStatusText {
+    color: $color-task-completed;
+  }
+}
+
+.statusSkipped {
+  background: $color-task-skipped-bg;
+  .currentStatusText {
+    color: $color-task-skipped;
+  }
+}
+
+.statusUncomfortable {
+  background: $color-task-uncomfortable-bg;
+  .currentStatusText {
+    color: $color-task-uncomfortable;
+  }
+}
+
 .guideCard {
   background: $color-bg-card;
   border-radius: $radius-md;
@@ -103,10 +151,13 @@
   flex: 1;
   height: $button-height-md;
   border-radius: $radius-button;
+  @include flex-center;
   @include button-reset;
-  font-size: $font-size-md;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   white-space: nowrap;
+  transition: all $transition-base;
+  border: 2rpx solid transparent;
 
   &:active {
     opacity: 0.9;
@@ -115,18 +166,47 @@
 }
 
 .btnCompleted {
-  background: $color-task-completed;
-  color: $color-text-white;
+  background: $color-task-completed-bg;
+  color: $color-task-completed;
+  border-color: $color-task-completed;
+
+  &.btnActive {
+    background: $color-task-completed;
+    color: $color-text-white;
+  }
 }
 
 .btnSkipped {
   background: $color-task-skipped-bg;
   color: $color-task-skipped;
-  border: 2rpx solid $color-border;
+  border-color: $color-border;
+
+  &.btnActive {
+    background: $color-task-skipped;
+    color: $color-text-white;
+    border-color: $color-task-skipped;
+  }
 }
 
 .btnUncomfortable {
   background: $color-task-uncomfortable-bg;
   color: $color-task-uncomfortable;
-  border: 2rpx solid rgba($color-task-uncomfortable, 0.3);
+  border-color: rgba($color-task-uncomfortable, 0.3);
+
+  &.btnActive {
+    background: $color-task-uncomfortable;
+    color: $color-text-white;
+    border-color: $color-task-uncomfortable;
+  }
+}
+
+.futureTip {
+  flex: 1;
+  @include flex-center;
+  height: $button-height-md;
+}
+
+.futureTipText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
 }

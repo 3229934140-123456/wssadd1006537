@@ -98,6 +98,42 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+.viewTabs {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: 6rpx;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.tabItem {
+  flex: 1;
+  height: 72rpx;
+  @include flex-center;
+  border-radius: $radius-sm;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.tabActive {
+  background: $color-primary;
+}
+
+.tabText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.tabTextActive {
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+}
+
 .sectionTitle {
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
@@ -142,4 +178,45 @@
   color: $color-text-secondary;
   line-height: $line-height-loose;
   display: block;
+}
+
+.dayDetail {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-lg;
+}
+
+.dayDetailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.dayDetailTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.todayTag {
+  display: inline-block;
+  font-size: 20rpx;
+  color: $color-primary;
+  background: rgba($color-primary, 0.1);
+  padding: 2rpx 12rpx;
+  border-radius: $radius-xs;
+  margin-left: $spacing-sm;
+  font-weight: $font-weight-medium;
+  vertical-align: middle;
+}
+
+.dayDetailCount {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
 }

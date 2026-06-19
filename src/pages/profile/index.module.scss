@@ -155,3 +155,20 @@
   display: block;
   margin-top: $spacing-xs;
 }
+
+.unreadBadge {
+  min-width: 36rpx;
+  height: 36rpx;
+  background: $color-error;
+  border-radius: $radius-round;
+  @include flex-center;
+  margin-right: $spacing-sm;
+  padding: 0 10rpx;
+}
+
+.unreadText {
+  font-size: 20rpx;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+}

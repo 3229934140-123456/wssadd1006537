@@ -1,0 +1,156 @@
+@use '@/styles/variables.scss' as *;
+
+.calendar {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-lg;
+}
+
+.weekHeader {
+  display: flex;
+  margin-bottom: $spacing-sm;
+}
+
+.weekDay {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-sm 0;
+}
+
+.weekDayText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  font-weight: $font-weight-medium;
+}
+
+.daysGrid {
+  width: 100%;
+}
+
+.weekRow {
+  display: flex;
+  margin-bottom: 4rpx;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.dayCell {
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-sm;
+  transition: all $transition-fast;
+  position: relative;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.dayDisabled {
+  opacity: 0.3;
+}
+
+.dayFuture {
+  opacity: 0.4;
+}
+
+.daySelected {
+  background: $color-primary;
+
+  .dayNumber {
+    color: $color-text-white !important;
+    font-weight: $font-weight-semibold;
+  }
+
+  .dayProgress {
+    background: rgba(255, 255, 255, 0.3);
+    .progressFill {
+      background: $color-text-white;
+    }
+  }
+}
+
+.dayToday {
+  border: 2rpx solid $color-primary;
+}
+
+.dayNumber {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  line-height: 1;
+  margin-bottom: 4rpx;
+}
+
+.dayNumberToday {
+  color: $color-primary;
+}
+
+.dayProgress {
+  width: 40rpx;
+  height: 6rpx;
+  background: $color-divider;
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: $color-primary;
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.progressIssue {
+  background: $color-warning;
+}
+
+.legend {
+  display: flex;
+  justify-content: space-around;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+}
+
+.legendDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+  margin-right: 8rpx;
+}
+
+.legendDone {
+  background: $color-primary;
+}
+
+.legendPartial {
+  background: $color-primary;
+  opacity: 0.5;
+}
+
+.legendIssue {
+  background: $color-warning;
+}
+
+.legendFuture {
+  background: $color-divider;
+}
+
+.legendText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}

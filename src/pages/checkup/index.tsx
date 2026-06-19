@@ -1,44 +1,83 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import SymptomItemComponent from '@/components/SymptomItem';
 import AlertCard from '@/components/AlertCard';
+import SymptomTrend from '@/components/SymptomTrend';
 import useAppStore from '@/store/useAppStore';
 import { symptoms, evaluateSymptomLevel, getLevelInfo } from '@/data/symptoms';
 import type { SymptomLevel } from '@/types';
 import dayjs from 'dayjs';
 import styles from './index.module.scss';
 
-interface HistoryRecord {
-  date: string;
-  level: SymptomLevel;
-  symptomCount: number;
-}
-
-const MOCK_HISTORY: HistoryRecord[] = [
-  { date: dayjs().subtract(1, 'day').format('MM-DD'), level: 'caution', symptomCount: 2 },
-  { date: dayjs().subtract(2, 'day').format('MM-DD'), level: 'normal', symptomCount: 0 },
-  { date: dayjs().subtract(3, 'day').format('MM-DD'), level: 'caution', symptomCount: 1 },
-  { date: dayjs().subtract(4, 'day').format('MM-DD'), level: 'normal', symptomCount: 0 },
-];
-
 const CheckupPage: React.FC = () => {
-  const { selectedSymptoms, toggleSymptom } = useAppStore();
+  const {
+    selectedSymptoms,
+    toggleSymptom,
+    addCheckupRecord,
+    getRecentCheckups,
+    getConsecutiveSymptomDays,
+    getTodayCheckup,
+  } = useAppStore();
 
-  const currentLevel = useMemo(() => evaluateSymptomLevel(selectedSymptoms), [selectedSymptoms]);
-  const levelInfo = useMemo(() => getLevelInfo(currentLevel), [currentLevel]);
+  const [showTrend, setShowTrend] = useState(true);
+
+  const currentLevel = useMemo(
+    () => evaluateSymptomLevel(selectedSymptoms),
+    [selectedSymptoms]
+  );
+  const levelInfo = useMemo(
+    () => getLevelInfo(currentLevel),
+    [currentLevel]
+  );
+
+  const todayCheckup = useMemo(() => getTodayCheckup(), [getTodayCheckup]);
+
+  const recentCheckups = useMemo(
+    () =>
+      getRecentCheckups(7).map((r) => ({
+        date: r.date,
+        level: r.level,
+        symptomCount: r.symptoms.length,
+      })),
+    [getRecentCheckups]
+  );
+
+  const bleedingDays = useMemo(
+    () => getConsecutiveSymptomDays('brush-bleeding'),
+    [getConsecutiveSymptomDays]
+  );
+  const sensitiveDays = useMemo(
+    () => getConsecutiveSymptomDays('cold-sensitive'),
+    [getConsecutiveSymptomDays]
+  );
+
+  const hasConsecutiveWarning = bleedingDays >= 3 || sensitiveDays >= 3;
 
   const handleSubmit = () => {
+    addCheckupRecord(selectedSymptoms, currentLevel);
     Taro.showToast({
       title: '自查结果已记录',
       icon: 'success',
     });
-    console.info('[Checkup] symptoms submitted', { selectedSymptoms, level: currentLevel });
+    console.info('[Checkup] symptoms submitted', {
+      selectedSymptoms,
+      level: currentLevel,
+    });
   };
 
   const handleConsult = () => {
-    Taro.switchTab({ url: '/pages/messages/index' });
+    const symptomNames = selectedSymptoms
+      .map((id) => symptoms.find((s) => s.id === id)?.name)
+      .filter(Boolean)
+      .join('、');
+    const text = encodeURIComponent(
+      `医生您好，我这几天感觉${symptomNames}，想咨询一下情况。`
+    );
+    Taro.navigateTo({
+      url: `/pages/chat/index?convId=conv-1&prefill=${text}`,
+    });
   };
 
   const levelClassMap: Record<SymptomLevel, string> = {
@@ -47,12 +86,51 @@ const CheckupPage: React.FC = () => {
     urgent: styles.levelUrgent,
   };
 
+  const levelLabelMap: Record<SymptomLevel, string> = {
+    normal: '正常观察',
+    caution: '建议咨询',
+    urgent: '尽快复诊',
+  };
+
   return (
     <View className={styles.container}>
       <View className={styles.header}>
         <Text className={styles.title}>今日症状自查</Text>
         <Text className={styles.subtitle}>请选择您今天出现的症状</Text>
       </View>
+
+      {hasConsecutiveWarning && (
+        <View className={styles.warningBanner}>
+          <Text className={styles.warningIcon}>⚠️</Text>
+          <Text className={styles.warningText}>
+            {bleedingDays >= 3
+              ? `已连续 ${bleedingDays} 天刷牙出血，建议咨询医生`
+              : `已连续 ${sensitiveDays} 天牙齿敏感，建议咨询医生`}
+          </Text>
+        </View>
+      )}
+
+      {showTrend && (
+        <View className={styles.trendCard}>
+          <View className={styles.trendHeader}>
+            <Text className={styles.trendTitle}>📊 近7天趋势</Text>
+            <Text
+              className={styles.trendToggle}
+              onClick={() => setShowTrend(false)}
+            >
+              收起
+            </Text>
+          </View>
+          <SymptomTrend records={recentCheckups} days={7} />
+        </View>
+      )}
+
+      {!showTrend && (
+        <View className={styles.trendCardMini} onClick={() => setShowTrend(true)}>
+          <Text className={styles.trendTitleMini}>📊 查看7天趋势</Text>
+          <Text className={styles.trendArrow}>›</Text>
+        </View>
+      )}
 
       <View className={styles.questionCard}>
         <Text className={styles.questionLabel}>您今天有以下哪些不适？</Text>
@@ -81,7 +159,9 @@ const CheckupPage: React.FC = () => {
           {(currentLevel === 'caution' || currentLevel === 'urgent') && (
             <View className={styles.submitBtn} onClick={handleConsult}>
               <Text className={styles.submitBtnText}>
-                {currentLevel === 'urgent' ? '立即联系医生' : '咨询医生'}
+                {currentLevel === 'urgent'
+                  ? '立即联系医生'
+                  : '带着症状去问医生'}
               </Text>
             </View>
           )}
@@ -101,17 +181,21 @@ const CheckupPage: React.FC = () => {
       <View className={styles.historyCard}>
         <Text className={styles.historyTitle}>近期自查记录</Text>
         <View className={styles.historyList}>
-          {MOCK_HISTORY.map((record) => (
+          {recentCheckups.slice(0, 5).map((record) => (
             <View className={styles.historyItem} key={record.date}>
               <Text className={styles.historyDate}>{record.date}</Text>
-              <View className={classnames(styles.historyLevel, levelClassMap[record.level])}>
-                <Text>
-                  {record.level === 'normal'
-                    ? '正常观察'
-                    : record.level === 'caution'
-                    ? '建议咨询'
-                    : '尽快复诊'}
-                </Text>
+              <Text className={styles.historySymptoms}>
+                {record.symptomCount > 0
+                  ? `${record.symptomCount} 项症状`
+                  : '无不适'}
+              </Text>
+              <View
+                className={classnames(
+                  styles.historyLevel,
+                  levelClassMap[record.level]
+                )}
+              >
+                <Text>{levelLabelMap[record.level]}</Text>
               </View>
             </View>
           ))}

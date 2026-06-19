@@ -24,6 +24,80 @@
   display: block;
 }
 
+.warningBanner {
+  display: flex;
+  align-items: center;
+  background: $color-level-urgent-bg;
+  border: 2rpx solid rgba($color-error, 0.2);
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.warningIcon {
+  font-size: 36rpx;
+  margin-right: $spacing-sm;
+}
+
+.warningText {
+  font-size: $font-size-sm;
+  color: $color-error;
+  font-weight: $font-weight-medium;
+  flex: 1;
+}
+
+.trendCard {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.trendHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.trendTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.trendToggle {
+  font-size: $font-size-sm;
+  color: $color-primary;
+}
+
+.trendCardMini {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.trendTitleMini {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.trendArrow {
+  font-size: 36rpx;
+  color: $color-text-disabled;
+}
+
 .questionCard {
   background: $color-bg-card;
   border-radius: $radius-md;
@@ -99,6 +173,14 @@
 .historyDate {
   font-size: $font-size-sm;
   color: $color-text-secondary;
+  flex: 1;
+}
+
+.historySymptoms {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  flex: 1;
+  text-align: center;
 }
 
 .historyLevel {
@@ -124,7 +206,7 @@
 }
 
 .submitBtn {
-  margin-top: $spacing-xl;
+  margin-top: $spacing-md;
   width: 100%;
   height: $button-height-lg;
   background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);

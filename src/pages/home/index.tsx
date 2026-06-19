@@ -1,10 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
+import classnames from 'classnames';
 import TaskCard from '@/components/TaskCard';
+import CalendarView from '@/components/CalendarView';
 import useAppStore from '@/store/useAppStore';
 import { getTasksForDay } from '@/data/tasks';
 import { getDayLabel } from '@/utils';
+import dayjs from 'dayjs';
 import type { TaskStatus } from '@/types';
 import styles from './index.module.scss';
 
@@ -25,27 +28,80 @@ function getTipForDay(day: number): string {
 }
 
 const HomePage: React.FC = () => {
-  const { currentDay, todayRecords, updateTaskStatus } = useAppStore();
+  const {
+    currentDay,
+    startDate,
+    activeView,
+    setActiveView,
+    getTaskStatus,
+    getDayRecords,
+  } = useAppStore();
 
-  const todayTasks = useMemo(() => getTasksForDay(currentDay), [currentDay]);
-  const completedCount = useMemo(
-    () => todayRecords.filter((r) => r.status === 'completed').length,
-    [todayRecords]
+  const [selectedDate, setSelectedDate] = useState<string>(
+    dayjs().format('YYYY-MM-DD')
   );
-  const totalCount = todayTasks.length;
-  const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  const getTaskStatus = (taskId: string): TaskStatus => {
-    const record = todayRecords.find((r) => r.taskId === taskId);
-    return record?.status || 'pending';
+  const selectedDayNumber = useMemo(() => {
+    const day = dayjs(selectedDate).diff(dayjs(startDate), 'day') + 1;
+    return Math.min(Math.max(day, 1), 30);
+  }, [selectedDate, startDate]);
+
+  const isToday = selectedDate === dayjs().format('YYYY-MM-DD');
+
+  const dayTasks = useMemo(
+    () => getTasksForDay(selectedDayNumber),
+    [selectedDayNumber]
+  );
+
+  const dayRecords = useMemo(
+    () => getDayRecords(selectedDate),
+    [selectedDate, getDayRecords]
+  );
+
+  const completedCount = useMemo(
+    () => dayRecords.filter((r) => r.status === 'completed').length,
+    [dayRecords]
+  );
+
+  const totalCount = dayTasks.length;
+  const percentage =
+    totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  const getStatus = (taskId: string): TaskStatus => {
+    return getTaskStatus(taskId, selectedDate);
   };
 
   const handleTaskClick = (taskId: string) => {
-    Taro.navigateTo({ url: `/pages/taskDetail/index?taskId=${taskId}` });
+    if (dayjs(selectedDate).isAfter(dayjs(), 'day')) {
+      Taro.showToast({ title: '未来日期不能打卡', icon: 'none' });
+      return;
+    }
+    Taro.navigateTo({
+      url: `/pages/taskDetail/index?taskId=${taskId}&date=${selectedDate}`,
+    });
   };
 
-  const tip = getTipForDay(currentDay);
-  const dayLabel = getDayLabel(currentDay);
+  const handleTabChange = (view: 'today' | 'calendar') => {
+    if (view === 'today') {
+      setSelectedDate(dayjs().format('YYYY-MM-DD'));
+    }
+    setActiveView(view);
+  };
+
+  const handleDayClick = (date: string, dayNumber: number) => {
+    setSelectedDate(date);
+  };
+
+  const tip = getTipForDay(selectedDayNumber);
+  const dayLabel = getDayLabel(selectedDayNumber);
+  const today = dayjs().format('YYYY-MM-DD');
+  const todayRecords = getDayRecords(today);
+  const todayCompleted = todayRecords.filter(
+    (r) => r.status === 'completed'
+  ).length;
+  const todayTotal = getTasksForDay(currentDay).length;
+  const todayPercent =
+    todayTotal > 0 ? Math.round((todayCompleted / todayTotal) * 100) : 0;
 
   return (
     <View className={styles.container}>
@@ -60,41 +116,126 @@ const HomePage: React.FC = () => {
             <Text className={styles.dayLabel}>洁治后第</Text>
             <Text className={styles.dayNumber}>{currentDay} 天</Text>
           </View>
-          <View className={styles.phaseTag} style={{ background: 'rgba(255,255,255,0.2)' }}>
+          <View className={styles.phaseTag}>
             <Text className={styles.phaseTagText}>{dayLabel}</Text>
           </View>
         </View>
         <View className={styles.progressTrack}>
-          <View className={styles.progressFill} style={{ width: `${percentage}%` }} />
+          <View
+            className={styles.progressFill}
+            style={{ width: `${todayPercent}%` }}
+          />
         </View>
         <View className={styles.progressInfo}>
-          <Text className={styles.progressPercent}>今日完成 {percentage}%</Text>
+          <Text className={styles.progressPercent}>今日完成 {todayPercent}%</Text>
           <Text className={styles.completedInfo}>
-            {completedCount}/{totalCount} 项已完成
+            {todayCompleted}/{todayTotal} 项已完成
           </Text>
         </View>
       </View>
 
-      <Text className={styles.sectionTitle}>今日任务</Text>
+      <View className={styles.viewTabs}>
+        <View
+            className={classnames(
+              styles.tabItem,
+              activeView === 'today' && styles.tabActive
+            )}
+            onClick={() => handleTabChange('today')}
+          >
+          <Text
+            className={classnames(
+              styles.tabText,
+              activeView === 'today' && styles.tabTextActive
+            )}
+          >
+            今日任务
+          </Text>
+        </View>
+        <View
+            className={classnames(
+              styles.tabItem,
+              activeView === 'calendar' && styles.tabActive
+            )}
+            onClick={() => handleTabChange('calendar')}
+          >
+          <Text
+            className={classnames(
+              styles.tabText,
+              activeView === 'calendar' && styles.tabTextActive
+            )}
+          >
+            日历视图
+          </Text>
+        </View>
+      </View>
 
-      <View className={styles.taskList}>
-        {todayTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            icon={task.icon}
-            title={task.title}
-            description={task.description}
-            category={task.category}
-            status={getTaskStatus(task.id)}
-            onClick={() => handleTaskClick(task.id)}
+      {activeView === 'today' && (
+        <View>
+          <Text className={styles.sectionTitle}>今日任务</Text>
+          <View className={styles.taskList}>
+            {dayTasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                icon={task.icon}
+                title={task.title}
+                description={task.description}
+                category={task.category}
+                status={getStatus(task.id)}
+                onClick={() => handleTaskClick(task.id)}
+              />
+            ))}
+          </View>
+          <View className={styles.tipCard}>
+            <Text className={styles.tipTitle}>💡 今日护理提示</Text>
+            <Text className={styles.tipText}>{tip}</Text>
+          </View>
+        </View>
+      )}
+
+      {activeView === 'calendar' && (
+        <View>
+          <CalendarView
+            selectedDate={selectedDate}
+            onDayClick={handleDayClick}
           />
-        ))}
-      </View>
 
-      <View className={styles.tipCard}>
-        <Text className={styles.tipTitle}>💡 今日护理提示</Text>
-        <Text className={styles.tipText}>{tip}</Text>
-      </View>
+          <View className={styles.dayDetail}>
+            <View className={styles.dayDetailHeader}>
+              <Text className={styles.dayDetailTitle}>
+                {dayjs(selectedDate).format('MM月DD日')} · 第{selectedDayNumber}天
+                {isToday && <Text className={styles.todayTag}>今天</Text>}
+              </Text>
+              <Text className={styles.dayDetailCount}>
+                {completedCount}/{totalCount} 已完成
+              </Text>
+            </View>
+
+            {dayTasks.length > 0 ? (
+              <View className={styles.taskList}>
+                {dayTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    icon={task.icon}
+                    title={task.title}
+                    description={task.description}
+                    category={task.category}
+                    status={getStatus(task.id)}
+                    onClick={() => handleTaskClick(task.id)}
+                  />
+                ))}
+              </View>
+            ) : (
+              <View className={styles.emptyTip}>
+                <Text className={styles.emptyText}>
+                  {dayjs(selectedDate).isAfter(dayjs(), 'day')
+                    ? '这一天还没到哦'
+                    : '这一天没有护理任务'}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+      )}
     </View>
   );
 };

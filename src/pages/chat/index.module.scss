@@ -10,7 +10,61 @@
 .messageList {
   flex: 1;
   padding: $spacing-lg $page-padding;
-  padding-bottom: 200rpx;
+  padding-bottom: 240rpx;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.dateDivider {
+  text-align: center;
+  margin: $spacing-lg 0;
+}
+
+.dateText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  background: rgba($color-text-tertiary, 0.06);
+  padding: 4rpx 24rpx;
+  border-radius: $radius-round;
+}
+
+.photoPreviewBar {
+  position: fixed;
+  bottom: 112rpx;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding;
+  border-top: 1rpx solid $color-divider;
+}
+
+.photoPreviewWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.photoPreview {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: $radius-sm;
+}
+
+.removePhotoBtn {
+  position: absolute;
+  top: -12rpx;
+  right: -12rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: $radius-round;
+  @include flex-center;
+}
+
+.removePhotoText {
+  font-size: 28rpx;
+  color: $color-text-white;
+  line-height: 1;
+  margin-top: -2rpx;
 }
 
 .inputBar {
@@ -37,7 +91,7 @@
   @include button-reset;
 
   &:active {
-    opacity: 0.9;
+    opacity: 0.8;
   }
 }
 
@@ -55,55 +109,44 @@
   align-items: center;
 }
 
-.inputText {
+.input {
+  flex: 1;
   font-size: $font-size-md;
-  color: $color-text-tertiary;
+  color: $color-text-primary;
+  height: 100%;
+}
+
+.inputPlaceholder {
+  color: $color-text-disabled;
+  font-size: $font-size-md;
 }
 
 .sendBtn {
   width: 120rpx;
   height: 72rpx;
-  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  background: $color-bg-hover;
   border-radius: $radius-round;
   @include flex-center;
   @include button-reset;
   flex-shrink: 0;
+  transition: all $transition-base;
 
   &:active {
     opacity: 0.9;
-    transform: scale(0.98);
+  }
+}
+
+.sendBtnActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+
+  .sendBtnText {
+    color: $color-text-white;
   }
 }
 
 .sendBtnText {
   font-size: $font-size-sm;
-  color: $color-text-white;
+  color: $color-text-disabled;
   font-weight: $font-weight-semibold;
   white-space: nowrap;
-}
-
-.photoPreview {
-  width: 200rpx;
-  height: 200rpx;
-  border-radius: $radius-sm;
-  margin-bottom: $spacing-md;
-}
-
-.photoPreviewWrap {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: $spacing-sm;
-}
-
-.dateDivider {
-  text-align: center;
-  margin: $spacing-lg 0;
-}
-
-.dateText {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  background: rgba($color-text-tertiary, 0.06);
-  padding: 4rpx 24rpx;
-  border-radius: $radius-round;
 }

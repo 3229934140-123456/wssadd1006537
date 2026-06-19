@@ -3,20 +3,32 @@ import { View, Text, Image } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import useAppStore from '@/store/useAppStore';
 import { tasks } from '@/data/tasks';
+import dayjs from 'dayjs';
+import classnames from 'classnames';
 import type { TaskStatus } from '@/types';
 import styles from './index.module.scss';
+
+const statusLabels: Record<TaskStatus, string> = {
+  pending: '待完成',
+  completed: '已完成',
+  skipped: '不会做',
+  uncomfortable: '不舒服',
+};
 
 const TaskDetailPage: React.FC = () => {
   const router = useRouter();
   const taskId = router.params.taskId || '';
-  const { todayRecords, updateTaskStatus } = useAppStore();
+  const date = router.params.date || dayjs().format('YYYY-MM-DD');
+  const { getTaskStatus, updateTaskStatus } = useAppStore();
 
   const task = useMemo(() => tasks.find((t) => t.id === taskId), [taskId]);
+  const currentStatus = useMemo(
+    () => getTaskStatus(taskId, date),
+    [taskId, date, getTaskStatus]
+  );
 
-  const currentStatus = useMemo((): TaskStatus => {
-    const record = todayRecords.find((r) => r.taskId === taskId);
-    return record?.status || 'pending';
-  }, [todayRecords, taskId]);
+  const isFuture = dayjs(date).isAfter(dayjs(), 'day');
+  const isToday = date === dayjs().format('YYYY-MM-DD');
 
   if (!task) {
     return (
@@ -29,17 +41,19 @@ const TaskDetailPage: React.FC = () => {
   }
 
   const handleFeedback = (status: TaskStatus) => {
-    updateTaskStatus(taskId, status);
-    const labels: Record<TaskStatus, string> = {
-      completed: '已标记完成',
-      skipped: '已标记不会做',
-      uncomfortable: '已标记不舒服',
-      pending: '',
-    };
-    Taro.showToast({ title: labels[status], icon: 'success' });
-    setTimeout(() => {
-      Taro.navigateBack();
-    }, 1000);
+    if (isFuture) {
+      Taro.showToast({ title: '未来日期不能打卡', icon: 'none' });
+      return;
+    }
+    updateTaskStatus(taskId, status, date);
+    Taro.showToast({
+      title: status === 'completed' ? '已标记完成 ✓' : statusLabels[status],
+      icon: 'none',
+    });
+  };
+
+  const handleBack = () => {
+    Taro.navigateBack();
   };
 
   return (
@@ -60,6 +74,27 @@ const TaskDetailPage: React.FC = () => {
             <Text className={styles.categoryText}>{task.category}</Text>
           </View>
           <Text className={styles.taskDesc}>{task.description}</Text>
+
+          {!isToday && (
+            <View className={styles.dateTag}>
+              <Text className={styles.dateTagText}>
+                {dayjs(date).format('YYYY年MM月DD日')}
+              </Text>
+            </View>
+          )}
+
+          {currentStatus !== 'pending' && (
+            <View
+              className={classnames(
+                styles.currentStatus,
+                styles[`status${currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)}`]
+              )}
+            >
+              <Text className={styles.currentStatusText}>
+                当前状态：{statusLabels[currentStatus]}
+              </Text>
+            </View>
+          )}
         </View>
 
         <View className={styles.guideCard}>
@@ -68,25 +103,47 @@ const TaskDetailPage: React.FC = () => {
         </View>
       </View>
 
-      {currentStatus === 'pending' && (
+      {!isFuture && (
         <View className={styles.bottomBar}>
           <View
-            className={`${styles.feedbackBtn} ${styles.btnCompleted}`}
+            className={classnames(
+              styles.feedbackBtn,
+              styles.btnCompleted,
+              currentStatus === 'completed' && styles.btnActive
+            )}
             onClick={() => handleFeedback('completed')}
           >
             <Text>✓ 已完成</Text>
           </View>
           <View
-            className={`${styles.feedbackBtn} ${styles.btnSkipped}`}
+            className={classnames(
+              styles.feedbackBtn,
+              styles.btnSkipped,
+              currentStatus === 'skipped' && styles.btnActive
+            )}
             onClick={() => handleFeedback('skipped')}
           >
             <Text>不会做</Text>
           </View>
           <View
-            className={`${styles.feedbackBtn} ${styles.btnUncomfortable}`}
+            className={classnames(
+              styles.feedbackBtn,
+              styles.btnUncomfortable,
+              currentStatus === 'uncomfortable' && styles.btnActive
+            )}
             onClick={() => handleFeedback('uncomfortable')}
           >
             <Text>不舒服</Text>
+          </View>
+        </View>
+      )}
+
+      {isFuture && (
+        <View className={styles.bottomBar}>
+          <View className={styles.futureTip}>
+            <Text className={styles.futureTipText}>
+              未来日期暂不可打卡
+            </Text>
           </View>
         </View>
       )}

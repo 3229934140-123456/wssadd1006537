@@ -1,25 +1,67 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, Image, ScrollView } from '@tarojs/components';
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, Text, Image, ScrollView, Input } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import ChatBubble from '@/components/ChatBubble';
-import { chatMessages, conversations } from '@/data/messages';
-import type { ChatMessage } from '@/types';
+import useAppStore from '@/store/useAppStore';
 import dayjs from 'dayjs';
 import styles from './index.module.scss';
+
+const DENTIST_INFO: Record<string, { name: string; avatar: string }> = {
+  'conv-1': {
+    name: '王医生',
+    avatar: 'https://picsum.photos/id/64/200/200',
+  },
+  'conv-2': {
+    name: '李医生',
+    avatar: 'https://picsum.photos/id/91/200/200',
+  },
+};
 
 const ChatPage: React.FC = () => {
   const router = useRouter();
   const convId = router.params.convId || 'conv-1';
-  const [messages, setMessages] = useState<ChatMessage[]>(
-    chatMessages[convId] || []
-  );
+  const prefill = router.params.prefill || '';
+  const scrollRef = useRef<any>(null);
+
+  const { conversations, sendMessage, markConversationRead } = useAppStore();
   const [inputValue, setInputValue] = useState('');
-  const [selectedPhoto, setSelectedPhoto] = useState('');
+  const [selectedPhoto, setSelectedPhoto] = useState<string>('');
 
   const conversation = useMemo(
-    () => conversations.find((c) => c.id === convId),
-    [convId]
+    () => conversations[convId],
+    [conversations, convId]
   );
+
+  const messages = conversation?.messages || [];
+  const dentistAvatar = DENTIST_INFO[convId]?.avatar || '';
+
+  useEffect(() => {
+    if (prefill) {
+      setInputValue(decodeURIComponent(prefill));
+    }
+  }, [prefill]);
+
+  useEffect(() => {
+    markConversationRead(convId);
+  }, [convId, markConversationRead]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(() => {
+        Taro.createSelectorQuery()
+          .select('#msg-bottom')
+          .boundingClientRect((rect: any) => {
+            if (rect) {
+              Taro.pageScrollTo({
+                scrollTop: rect.bottom,
+                duration: 300,
+              });
+            }
+          })
+          .exec();
+      }, 100);
+    }
+  }, [messages.length]);
 
   const handleChoosePhoto = () => {
     Taro.chooseImage({
@@ -33,58 +75,112 @@ const ChatPage: React.FC = () => {
       },
       fail: (err) => {
         console.error('[Chat] choose image error', err);
+        Taro.showToast({ title: '选择图片失败', icon: 'none' });
       },
     });
   };
 
+  const handleRemovePhoto = () => {
+    setSelectedPhoto('');
+  };
+
   const handleSend = () => {
-    if (!inputValue && !selectedPhoto) return;
+    if (!inputValue.trim() && !selectedPhoto) return;
 
-    const newMsg: ChatMessage = {
-      id: `msg-${Date.now()}`,
-      sender: 'patient',
-      content: inputValue,
-      imageUrl: selectedPhoto || undefined,
-      timestamp: dayjs().format('YYYY-MM-DD HH:mm'),
-    };
-
-    setMessages((prev) => [...prev, newMsg]);
+    sendMessage(convId, inputValue.trim(), selectedPhoto || undefined);
     setInputValue('');
     setSelectedPhoto('');
+  };
 
-    setTimeout(() => {
-      const replyMsg: ChatMessage = {
-        id: `msg-${Date.now() + 1}`,
-        sender: 'dentist',
-        content: '收到您的消息，我会尽快回复您。',
-        timestamp: dayjs().format('YYYY-MM-DD HH:mm'),
-      };
-      setMessages((prev) => [...prev, replyMsg]);
-    }, 1500);
+  const handleInputChange = (e: any) => {
+    setInputValue(e.detail.value);
+  };
+
+  const handleInputConfirm = () => {
+    handleSend();
+  };
+
+  const isToday = (timestamp: string) => {
+    return dayjs(timestamp).isSame(dayjs(), 'day');
+  };
+
+  const shouldShowDate = (index: number) => {
+    if (index === 0) return true;
+    const prevDate = dayjs(messages[index - 1].timestamp).format('YYYY-MM-DD');
+    const currDate = dayjs(messages[index].timestamp).format('YYYY-MM-DD');
+    return prevDate !== currDate;
+  };
+
+  const formatDateLabel = (timestamp: string) => {
+    const d = dayjs(timestamp);
+    const now = dayjs();
+    if (d.isSame(now, 'day')) return '今天';
+    if (d.isSame(now.subtract(1, 'day'), 'day')) return '昨天';
+    return d.format('YYYY年MM月DD日');
+  };
+
+  const formatTime = (timestamp: string) => {
+    return dayjs(timestamp).format('HH:mm');
   };
 
   return (
     <View className={styles.container}>
       <ScrollView className={styles.messageList} scrollY scrollIntoView="">
-        {messages.map((msg) => (
-          <ChatBubble
-            key={msg.id}
-            message={msg}
-            dentistAvatar={conversation?.dentistAvatar}
-          />
+        {messages.map((msg, idx) => (
+          <View key={msg.id}>
+            {shouldShowDate(idx) && (
+              <View className={styles.dateDivider}>
+                <Text className={styles.dateText}>
+                  {formatDateLabel(msg.timestamp)}
+                </Text>
+              </View>
+            )}
+            <ChatBubble message={msg} dentistAvatar={dentistAvatar} />
+          </View>
         ))}
+        <View id="msg-bottom" style={{ height: '1rpx' }} />
       </ScrollView>
+
+      {selectedPhoto && (
+        <View className={styles.photoPreviewBar}>
+          <View className={styles.photoPreviewWrap}>
+            <Image
+              className={styles.photoPreview}
+              src={selectedPhoto}
+              mode="aspectFill"
+            />
+            <View
+              className={styles.removePhotoBtn}
+              onClick={handleRemovePhoto}
+            >
+              <Text className={styles.removePhotoText}>×</Text>
+            </View>
+          </View>
+        </View>
+      )}
 
       <View className={styles.inputBar}>
         <View className={styles.photoBtn} onClick={handleChoosePhoto}>
           <Text className={styles.photoIcon}>📷</Text>
         </View>
         <View className={styles.inputWrap}>
-          <Text className={styles.inputText}>
-            {inputValue || '输入消息...'}
-          </Text>
+          <Input
+            className={styles.input}
+            value={inputValue}
+            placeholder="输入消息..."
+            placeholderClass={styles.inputPlaceholder}
+            onInput={handleInputChange}
+            onConfirm={handleInputConfirm}
+            confirmType="send"
+            adjustPosition
+          />
         </View>
-        <View className={styles.sendBtn} onClick={handleSend}>
+        <View
+          className={`${styles.sendBtn} ${
+            inputValue.trim() || selectedPhoto ? styles.sendBtnActive : ''
+          }`}
+          onClick={handleSend}
+        >
           <Text className={styles.sendBtnText}>发送</Text>
         </View>
       </View>
